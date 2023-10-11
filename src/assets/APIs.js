@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const BASE_URL = 'http://ec2-54-159-131-208.compute-1.amazonaws.com/api/'
+const BASE_URL = 'http://localhost:5040/'
 
 export const GetMethod = async ({ url }) => {
     try {

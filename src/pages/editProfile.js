@@ -1,22 +1,24 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Col, Button, Row, Container, Card, Form } from "react-bootstrap";
 import { Link } from 'react-router-dom';
+import { AuthContext } from "../context/AuthProvider";
 
 const EditProfile = () => {
-    const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
-    const [password, setPassword] = useState("");
-    const [mobile, setMobile] = useState("");
-    const [age, setAge] = useState("");
-    const [gender, setGender] = useState("");
-    const [role, setRole] = useState("");
-    const [disease, setDisease] = useState("");
-    const [bloodType, setBloodType] = useState("");
-    const [medicines, setMedicines] = useState("");
+    const { userInfo, submitData } = useContext(AuthContext)
+    const [email, setEmail] = useState(userInfo.email);
+    const [mobile, setMobile] = useState(userInfo.mobile);
+    const [disease, setDisease] = useState(userInfo.disease);
+    const [bloodType, setBloodType] = useState(userInfo.bloodType);
+    const [medicines, setMedicines] = useState(userInfo.medicines);
 
-
-    const [passwordError, setpasswordError] = useState("");
     const [emailError, setemailError] = useState("");
+    const UpdateBody = {
+        email: email,
+        mobile: mobile,
+        bloodType: bloodType,
+        disease: disease,
+        medicines: medicines
+    }
 
     const handleValidation = (event) => {
         let formIsValid = true;
@@ -30,21 +32,10 @@ const EditProfile = () => {
             formIsValid = true;
         }
 
-        if (!password.match(/^[a-zA-Z]{8,22}$/)) {
-            formIsValid = false;
-            setpasswordError(
-                "Only Letters and length must best min 8 Chracters and Max 22 Chracters"
-            );
-            return false;
-        } else {
-            setpasswordError("");
-            formIsValid = true;
-        }
-
         return formIsValid;
     };
 
-    const loginSubmit = (e) => {
+    const submit = (e) => {
         e.preventDefault();
         handleValidation();
     };
@@ -57,28 +48,28 @@ const EditProfile = () => {
                         <Card className="shadow">
                             <Card.Body>
                                 <div className="mb-3 mt-md-2">
-                                    <Link to='/home'> <Button variant="link">Go Back</Button></Link>
+                                    <Link to='/'><Button variant="link">Go Back</Button></Link>
                                     <div className="d-flex flex-column justify-content-center align-items-center">
                                         <h2 className="fw-bold mb-2 text-uppercase ">Welcome Momamed</h2>
                                         <p className=" mb-3">Update your data</p>
                                     </div>
                                     <div className="mb-3">
-                                        <Form onSubmit={loginSubmit}>
+                                        <Form onSubmit={submit}>
                                             <Form.Group className="mb-3" controlId="formBasicEmail">
-                                                <Form.Control type="email" placeholder="Enter email" required onChange={(e) => setEmail(e.target.value)} />
+                                                <Form.Control type="email" value={email} placeholder="Enter email" required onChange={(e) => setEmail(e.target.value)} />
                                                 <small id="emailHelp" className="text-danger form-text">
                                                     {emailError}
                                                 </small>
                                             </Form.Group>
                                             <Form.Group className="mb-3">
-                                                <Form.Control type="text" placeholder="Enter your mobile" value={mobile} required onChange={(e) => setMobile(e.target.value)} />
+                                                <Form.Control type="text" value={mobile} placeholder="Enter your mobile" required onChange={(e) => setMobile(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
-                                                <Form.Control type="text" placeholder="Enter type of disease" required onChange={(e) => setDisease(e.target.value)} />
+                                                <Form.Control type="text" value={disease} placeholder="Enter type of disease" required onChange={(e) => setDisease(e.target.value)} />
                                             </Form.Group>
                                             <Form.Group className="mb-3">
-                                                <Form.Select onChange={e => setBloodType(e.target.value)} required>
-                                                    <option selected disabled>Select blood type</option>
+                                                <Form.Select defaultValue='Select blood type' value={bloodType} onChange={e => setBloodType(e.target.value)} required>
+                                                    <option disabled>Select blood type</option>
                                                     <option>A+</option>
                                                     <option>A-</option>
                                                     <option>B+</option>
@@ -90,10 +81,10 @@ const EditProfile = () => {
                                                 </Form.Select>
                                             </Form.Group>
                                             <Form.Group className="mb-3">
-                                                <Form.Control as="textarea" rows={3} placeholder='Medicines you take' required onChange={e => setMedicines(e.target.value)} />
+                                                <Form.Control value={medicines} as="textarea" rows={3} placeholder='Medicines you take' required onChange={e => setMedicines(e.target.value)} />
                                             </Form.Group>
                                             <div className="d-grid">
-                                                <Button variant="primary" type="submit">
+                                                <Button variant="primary" type="submit" onClick={() => submitData(UpdateBody, userInfo._id)}>
                                                     Submit
                                                 </Button>
                                             </div>

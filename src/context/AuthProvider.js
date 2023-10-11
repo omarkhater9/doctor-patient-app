@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import Swal from 'sweetalert2';
-import { LoginMethod } from "../assets/APIs";
+import { LoginMethod, PutMethod } from "../assets/APIs";
 
 export const AuthContext = createContext({});
 
@@ -23,23 +23,23 @@ export const AuthProvider = ({ children }) => {
             toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
     })
-    const login = async (username, password) => {
+    const login = async (email, password) => {
         try {
             setIsLoading(true)
             const res = await LoginMethod({
                 url: 'user/login',
                 body: {
-                    userName: username,
+                    email: email,
                     password: password
                 }
             })
-            if (ROLES.includes(res.body.user.role.name)) {
-                setUserInfo(res.body.user)
-                setUserToken(res.body.user.token)
-                setUserRole(res.body.user.role.name)
-                localStorage.setItem('userToken', res.body.user.token)
-                localStorage.setItem('userRole', res.body.user.role.name)
-                localStorage.setItem('userInfo', JSON.stringify(res.body.user))
+            if (ROLES.includes(res.body.role)) {
+                setUserInfo(res.body)
+                setUserToken(res.body.token)
+                setUserRole(res.body.role.name)
+                localStorage.setItem('userToken', res.body.token)
+                localStorage.setItem('userRole', res.body.role)
+                localStorage.setItem('userInfo', JSON.stringify(res.body))
             } else {
                 Toast.fire({
                     icon: 'error',
@@ -49,6 +49,25 @@ export const AuthProvider = ({ children }) => {
             setIsLoading(false)
         } catch (err) {
             setIsLoading(false)
+            Toast.fire({
+                icon: 'error',
+                title: `${err?.response.data.error.message}`
+            })
+        }
+    }
+    const submitData = async (body, id) => {
+        try {
+            const res = await PutMethod({
+                url: 'user/updatePatientData',
+                id: id,
+                body: body
+            })
+            setUserInfo(res.body)
+            Toast.fire({
+                icon: 'success',
+                title: 'Data Updated !'
+            })
+        } catch (err) {
             Toast.fire({
                 icon: 'error',
                 title: `${err?.response.data.error.message}`
@@ -86,7 +105,7 @@ export const AuthProvider = ({ children }) => {
         isLoggedIn()
     }, [])
     return (
-        <AuthContext.Provider value={{ login, logout, isLoading, userToken, userInfo, userRole }}>
+        <AuthContext.Provider value={{ login, logout, submitData, isLoading, userToken, userInfo, userRole }}>
             {children}
         </AuthContext.Provider>
     )

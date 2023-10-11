@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Col, Button, Row, Container, Card, Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthProvider";
 
 const Login = () => {
+    const { login } = useContext(AuthContext)
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
     const [passwordError, setpasswordError] = useState("");
@@ -82,10 +83,8 @@ const Login = () => {
                                                 </p>
                                             </Form.Group>
                                             <div className="d-grid">
-                                            <Button variant="primary" type="submit">
-                                                <Link to="/home" >
+                                            <Button variant="primary" type="submit" onClick={()=> login(email, password)}>
                                                     Login
-                                                </Link>
                                             </Button>
                                             </div>
                                         </Form>
